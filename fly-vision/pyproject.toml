@@ -1,0 +1,33 @@
+[project]
+name = "fly-vision"
+version = "0.1.0"
+description = "Live fruit-fly connectome (MaleCNS v1.0) driving a quadruped robot from a webcam and microphone"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "flybrain>=0.1.0",
+    "numpy>=2.0",
+    "opencv-python>=4.10",
+]
+
+[project.optional-dependencies]
+# CuPy alone is not enough on Windows: without the nvidia-* runtime wheels,
+# cuda_available() reports True but cuSPARSE fails to find nvJitLink.
+cuda = [
+    "cupy-cuda12x>=14.0",
+    "nvidia-cublas-cu12",
+    "nvidia-cuda-nvrtc-cu12",
+    "nvidia-cuda-runtime-cu12",
+    "nvidia-cufft-cu12",
+    "nvidia-curand-cu12",
+    "nvidia-cusolver-cu12",
+    "nvidia-cusparse-cu12",
+    "nvidia-nvjitlink-cu12",
+]
+
+[project.scripts]
+fly-vision = "fly_vision:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"

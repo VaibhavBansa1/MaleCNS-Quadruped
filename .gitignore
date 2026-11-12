@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[oc]
+.venv/
+*.egg-info/
+build/
+dist/
+
+# Large or generated files (kept out of the repo on purpose)
+*.npz
+*.pt
+fly-vision/*.mp4
+
+# PlatformIO / editors
+.pio/
+.vscode/
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
