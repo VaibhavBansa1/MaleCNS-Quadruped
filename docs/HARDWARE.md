@@ -1,5 +1,39 @@
 # Hardware
 
+![Top view: four legs on PCA9685 channels 0-3, head servo on channel 4, OLED face](media/quadruped_top_view.svg)
+
+![Wiring: PC to ESP32 over USB, ESP32 to PCA9685 on I2C, OLED on the second I2C bus, servo supply on V+](media/quadruped_wiring.svg)
+
+![Gait: diagonal pairs, 65% slow push and 35% fast return, half a cycle apart](media/quadruped_gait.svg)
+
+## How the body works
+
+* **Four legs, one servo each.** Every leg is a flat stick on a micro-servo horn that
+  swings forward and back around "straight down" (90 degrees). There is no knee joint.
+* **Diagonal gait.** Front-left and back-right (pair A) move together; front-right and
+  back-left (pair B) move half a cycle later. Each leg pushes back slowly for 65% of the
+  cycle while it carries weight, then swings forward quickly, so the robot creeps forward.
+* **Turning on the spot.** For `L` the left legs run the cycle backwards while the right
+  legs run it forwards (the reverse for `R`).
+* **Head and face.** The head servo turns up to 60 degrees toward the side the brain
+  wants to steer. The OLED shows a fruit-fly face that reacts: wide eyes on escape,
+  closed eyes when the PC goes quiet, a B / M letter for brain or manual control.
+* **Safety.** Servo speed is capped at 300 degrees/s, legs move to 90 degrees one at a
+  time at power-up, and a 500 ms watchdog stops the legs if the PC program stops.
+
+## Build it
+
+1. Mount the four leg servos at the corners of a light cardboard box, shafts pointing
+   sideways, and glue a flat stick to each servo horn as the leg.
+2. Before fixing the horns, send all servos to 90 degrees (power the board and it does
+   this by itself) and fit each leg pointing straight down.
+3. Mount the head servo at the front, shaft up, and stick the OLED on its horn so the
+   face turns with the head.
+4. Put the ESP32 and PCA9685 inside the box and wire them as shown. Keep the servo
+   supply leads short and thick.
+5. Flash the firmware ([SETUP.md](SETUP.md#5-flash-the-robot-firmware)), then use `T 0`
+   ... `T 3` and the settings below to match the code to your legs.
+
 ## Parts
 
 | Part | Used for |

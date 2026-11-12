@@ -11,7 +11,7 @@ folder unless it says otherwise.
 * [6. Test each part alone](#6-test-each-part-alone)
 * [7. Run everything](#7-run-everything)
 * [8. Ways to run it](#8-ways-to-run-it)
-* [9. Offline experiments](#9-offline-experiments)
+* [9. Run the simulations](#9-run-the-simulations)
 * [10. Troubleshooting](#10-troubleshooting)
 
 ## 1. What you need
@@ -135,6 +135,9 @@ Copying the folder from another computer works too; no download is needed then.
 
 ## 5. Flash the robot firmware
 
+Build the robot first: [HARDWARE.md](HARDWARE.md) has the top-view layout, the wiring
+diagram and the gait diagram.
+
 1. Install [VS Code](https://code.visualstudio.com/) and the **PlatformIO IDE** extension.
 2. **File → Open Folder → `fly_body`**. PlatformIO reads `platformio.ini` and fetches the
    three libraries (Adafruit PWM Servo Driver, SSD1306, GFX) by itself.
@@ -147,6 +150,25 @@ Copying the folder from another computer works too; no download is needed then.
    `main.cpp` until each leg matches (see [HARDWARE.md](HARDWARE.md)).
 6. **Close the Serial Monitor** before running the Python side; only one program can
    hold the port.
+
+The firmware was compiled for this repository with PlatformIO (espressif32, Arduino):
+about 7% of RAM and 27% of flash. From a terminal instead of VS Code:
+
+```bash
+cd fly_body
+pio run                  # compile
+pio run -t upload        # compile and flash
+pio device monitor       # serial monitor, 115200 baud
+```
+
+### Control the robot (four ways)
+
+| Way | How |
+|---|---|
+| By hand, no PC program | Serial Monitor: type `F`, `L`, `R`, `B`, `S` and press Enter. The watchdog is off until something sends `W`, so the robot keeps walking until `S`. |
+| From Python, by hand | `uv run python live/robot_link.py COM4` (Linux `/dev/ttyUSB0`), then type letters |
+| Keyboard in the brain window | `uv run python live/run_live.py`, press `m` for manual, drive with w a s d x |
+| The fly brain | `uv run python live/run_live.py`: the connectome decides |
 
 ## 6. Test each part alone
 
@@ -211,9 +233,76 @@ uv run python live/run_live.py --device cpu
 
 Every option and tunable number is explained in [SETTINGS.md](SETTINGS.md).
 
-## 9. Offline experiments
+## 9. Run the simulations
 
-These reproduce the results in [RESEARCH_NOTES.md](RESEARCH_NOTES.md). They need a
+There are two simulated bodies. Neither needs the robot.
+
+### 9a. The virtual fly (built in)
+
+A top-down 2D fly that gets exactly the same commands as the robot. It is always
+on the right side of the `run_live.py` window, so `--port none` gives you the whole
+brain-to-body loop on screen:
+
+```bash
+uv run python live/run_live.py --port none
+uv run python live/twin.py          # the virtual fly alone, drive it with w a s d x
+```
+
+### 9b. The 3D fly body in MuJoCo (`fly_body.py`)
+
+The brain drives a physical NeuroMechFly body (MuJoCo + FlyGym) from the separate
+open-source [fly-arena](https://github.com/artem-x-meta/fly-arena) project. This is how
+`docs/media/sim_fly_escapes.gif` was made. Only fly-arena's body and physics are used;
+its own brain and its 1.1 GB graph download are **not** needed.
+
+fly-arena needs Python **3.12 exactly** and an OpenGL-capable graphics driver. Clone it
+next to this repository:
+
+```
+some-folder/
+  MaleCNS-Quadruped/
+  fly-arena/
+```
+
+Windows:
+
+```powershell
+cd some-folder
+git clone https://github.com/artem-x-meta/fly-arena.git
+cd fly-arena
+uv venv --python 3.12
+uv pip install -e .
+uv pip install flybrain opencv-python      # this project's brain side, into the same environment
+.\.venv\Scripts\python.exe -m fly_arena run --mode body-demo --seconds 3   # checks the body and viewer
+```
+
+Linux: the same, with `.venv/bin/python` (fly-arena also ships `setup_linux.sh`).
+Without a desktop, add `--headless --gl egl` to fly-arena's own commands.
+
+Run the brain in the body. Any video works as the fly's view; fast motion and
+looming shapes make it flee:
+
+```powershell
+cd some-folder\fly-arena
+.\.venv\Scripts\python.exe ..\MaleCNS-Quadruped\fly-vision\fly_body.py --video my_video.mp4 --seconds 15 --out fly.mp4
+```
+
+| Option | Default | What it does |
+|---|---|---|
+| `--video` | `bad-apple.mp4` | What the fly sees |
+| `--wav` | none | Optional mono 16 kHz wav that drives the ears |
+| `--seconds` | `12` | Simulated time |
+| `--out` | none | Write an mp4 of the fly |
+
+It prints the gait command, heading, position and escape level every second, then a
+summary: distance walked, time spent fleeing, and whether the fly stayed upright.
+How it works: the connectome picks walk / turn (DNa02, DNp09, MDN, decoded the same way
+as fly-arena's own decoder) and whether to flee (DNp01); fly-arena's engineered motor
+programs move the legs.
+
+### 9c. Offline experiments
+
+These reproduce the tables in [RESEARCH_NOTES.md](RESEARCH_NOTES.md). They need a
 video file (and optionally a mono wav) of your own; none is included.
 
 ```bash
@@ -228,15 +317,6 @@ uv run python inspect_pipeline.py my_video.mp4 --export series.npz
 uv run python visual_spike_encoder.py my_video.mp4
 ffmpeg -i my_video.mp4 -ac 1 -ar 16000 sound.wav
 uv run python audio_spike_encoder.py sound.wav
-```
-
-`fly_body.py` (brain driving the simulated MuJoCo fly) needs the separate
-male-cns-arena project and its environment (MuJoCo + FlyGym). It is run from that
-project's virtual environment:
-
-```bash
-cd fly-arena
-./.venv/Scripts/python.exe ../fly-vision/fly_body.py --video my_video.mp4 --seconds 15 --out out.mp4
 ```
 
 ## 10. Troubleshooting

@@ -169,7 +169,13 @@ the food in the camera picture.
 | r | recalibrate (keep the scene still 8 s) |
 | q | quit (robot stops) |
 
-Flash the robot with PlatformIO: open `fly_body/` in VS Code and press Upload.
+Flash the robot with PlatformIO: open `fly_body/` in VS Code and press Upload
+(or `pio run -t upload`). After that you can drive it four ways: typed letters in the
+Serial Monitor, `live/robot_link.py`, the keyboard in the brain window, or the fly brain.
+
+**Simulations, no robot needed:** `run_live.py --port none` shows the virtual fly, and
+`fly_body.py` puts the brain in a 3D MuJoCo fly body
+(setup in [docs/SETUP.md](docs/SETUP.md#9-run-the-simulations)).
 
 ## Documentation
 
@@ -184,10 +190,12 @@ Flash the robot with PlatformIO: open `fly_body/` in VS Code and press Upload.
 
 ## Hardware at a glance
 
+![The quadruped from above: leg channels, diagonal pairs, head servo and OLED face](docs/media/quadruped_top_view.svg)
+
 ESP32 dev board, PCA9685 16-channel servo driver, 4x MG90S leg servos,
 1x 180-degree head servo, 0.96" SSD1306 OLED (the fly face), a USB webcam,
-a 5-6 V supply for the servos, and a cardboard body. Total cost is a few
-hundred rupees beyond the PC.
+a 5-6 V supply for the servos, and a cardboard body. Wiring, gait and build steps,
+with diagrams, are in [docs/HARDWARE.md](docs/HARDWARE.md).
 
 ## Credits
 
