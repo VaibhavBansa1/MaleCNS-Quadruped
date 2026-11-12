@@ -45,8 +45,8 @@ from nose import make_nose
 from robot_link import make_robot
 from twin import VirtualFly
 
-MAX_STEPS_PER_LOOP = 5
-CALIBRATE_SECONDS = 8.0    # live baseline: the real scene, kept still (longer = steadier)     # if the loop gets slow, don't try to catch up more than this
+MAX_STEPS_PER_LOOP = 5     # if the loop gets slow, don't try to catch up more than this
+CALIBRATE_SECONDS = 8.0    # live baseline: the real scene, kept still (longer = steadier)
 MANUAL_KEYS = {ord("w"): "F", ord("s"): "B", ord("a"): "L", ord("d"): "R", ord("x"): "S"}
 HELP = [
     "click food: teach nose    space: pause robot    m: brain / manual    w a s d x: drive (manual)",

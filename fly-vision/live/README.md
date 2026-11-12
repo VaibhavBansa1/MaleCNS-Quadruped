@@ -40,8 +40,7 @@ Optional, only for the YOLO nose:
 The dashboard shows which ear and robot are actually in use.
 
 ## Robot mics (one ESP32 does legs and mics)
-* Firmware: `fly_body/src/mic.cpp` + `fly_body/include/mic.h`; `main.cpp` got 5 small
-  additions (old version kept as `main.cpp.bak`). Upload as usual from PlatformIO.
+* Firmware: `fly_body/src/mic.cpp` + `fly_body/include/mic.h`; `main.cpp` calls them. Upload as usual from PlatformIO.
 * Wiring: purple MAX4466 OUT -> GPIO 34 (left ear), red KY-037 AO -> GPIO 35 (right ear),
   both powered from 3.3V.
 * The ESP32 filters the sound into the two fly bands itself and sends

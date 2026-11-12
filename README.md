@@ -57,7 +57,7 @@ This is the same split real animals and other connectome-body projects use:
   diagonal walking gait. Nobody has a validated map from fly motor neurons to fly
   muscles yet, let alone to hobby servos, so the legs are not driven neuron by neuron.
 
-Details, neuron lists and every threshold are in [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md).
+Details and neuron lists are in [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md); every setting is in [docs/SETTINGS.md](docs/SETTINGS.md).
 
 ## Honest results
 
@@ -119,6 +119,8 @@ MaleCNS-Quadruped/
     src/face.cpp         animated fruit-fly face on the OLED
     src/mic.cpp          optional on-robot microphones
   docs/
+    SETUP.md             install, GPU or CPU, data, firmware, troubleshooting
+    SETTINGS.md          every option and tunable number
     HOW_IT_WORKS.md      neurons, decision rules, thresholds
     HARDWARE.md          parts list, wiring, power
     RESEARCH_NOTES.md    simulation results and known traps
@@ -130,35 +132,32 @@ Every Python module in `live/` can be run on its own to test just that part
 
 ## Quick start
 
-You need a PC with Python 3.12 and [uv](https://docs.astral.sh/uv/). An NVIDIA GPU is
-strongly recommended. The CPU works, just with slower reactions.
+You need Python 3.11+ and [uv](https://docs.astral.sh/uv/). An NVIDIA GPU makes the brain
+run in real time; a CPU works too, just slower. The full step-by-step guide (Windows and
+Linux, GPU and CPU, data, firmware, troubleshooting) is in **[docs/SETUP.md](docs/SETUP.md)**.
 
 ```bash
-cd fly-vision
+git clone https://github.com/VaibhavBansa1/MaleCNS-Quadruped.git
+cd MaleCNS-Quadruped/fly-vision
 uv venv --python 3.12
 uv pip install flybrain numpy opencv-python scipy sounddevice pyserial
-uv pip install ".[cuda]"          # optional, NVIDIA GPU
-uv pip install ultralytics        # optional, for --nose yolo
+uv pip install ".[cuda]"          # optional: NVIDIA GPU
+uv pip install ultralytics        # optional: YOLO food detector
+
+uv run python live/brain_link.py  # first run downloads the brain (~260 MB); says "brain ready on cuda" or "cpu"
+uv run python live/run_live.py    # finds the camera and robot by itself
 ```
 
-flybrain needs its prebuilt connectome files (`brain.npz`, `weights.npz`, about 260 MB).
-Point to them with `FLY_DATA`:
+Keep the scene still for the first 8 seconds (the live resting baseline), then click
+the food in the camera picture.
 
-```bash
-export FLY_DATA=~/fly-data              # Linux / macOS
-set FLY_DATA=C:\Users\you\fly-data      # Windows
-```
-
-Test the brain alone, then run everything:
-
-```bash
-uv run python live/brain_link.py                 # should say "brain ready on cuda"
-uv run python live/run_live.py --mic laptop      # screen only, robot found automatically if plugged in
-uv run python live/run_live.py --list-cameras
-uv run python live/run_live.py --camera 1 --nose yolo --target apple --food-as-target
-```
-
-Keep the scene still for the first 8 seconds: that is the live resting baseline.
+| Run it like this | Command |
+|---|---|
+| Screen only, no robot | `uv run python live/run_live.py --port none` |
+| Force GPU / CPU | `--device cuda` / `--device cpu` |
+| Pick a camera or a phone stream | `--camera 1` / `--camera http://192.168.1.20:8080/video` |
+| Find food with YOLO | `--nose yolo --target apple --food-as-target` |
+| No microphone | `--mic none` |
 
 | Key | Does |
 |---|---|
@@ -170,8 +169,18 @@ Keep the scene still for the first 8 seconds: that is the live resting baseline.
 | r | recalibrate (keep the scene still 8 s) |
 | q | quit (robot stops) |
 
-Flash the robot with PlatformIO: open `fly_body/` in VS Code with the PlatformIO
-extension and press Upload. Wiring is in [docs/HARDWARE.md](docs/HARDWARE.md).
+Flash the robot with PlatformIO: open `fly_body/` in VS Code and press Upload.
+
+## Documentation
+
+| Document | What is in it |
+|---|---|
+| [docs/SETUP.md](docs/SETUP.md) | Install on Windows or Linux, GPU vs CPU, getting the connectome data, flashing the firmware, testing each part alone, every way to run it, troubleshooting |
+| [docs/SETTINGS.md](docs/SETTINGS.md) | Every command-line option, environment variable, key, threshold and firmware constant: default and what changing it does |
+| [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) | The senses, which neurons are driven and read, the decision rules, the gait, known limitations |
+| [docs/HARDWARE.md](docs/HARDWARE.md) | Parts, wiring, power, serial commands, measured robot speed |
+| [docs/RESEARCH_NOTES.md](docs/RESEARCH_NOTES.md) | Offline simulation results with all tables, and the traps found on the way |
+| [fly-vision/live/GUIDE.md](fly-vision/live/GUIDE.md) | Plain-language tour of every Python file |
 
 ## Hardware at a glance
 

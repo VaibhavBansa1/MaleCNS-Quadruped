@@ -10,7 +10,8 @@
 | 1x 180-degree micro servo | Head (turns toward where the brain wants to steer) |
 | 0.96" SSD1306 I2C OLED, 128x64 (yellow + blue) | The animated fruit-fly face |
 | USB webcam | The fly's eyes and nose (it stays on the desk, not on the robot) |
-| Laptop / PC microphone | The fly's ears (optional on-robot mics: two analog mics on GPIO34/35) |
+| Laptop / PC microphone | The fly's ears |
+| Optional: MAX4466 and KY-037 analog mic modules | On-robot ears: left on GPIO34, right on GPIO35, both powered from 3.3 V (`--mic esp`) |
 | 5-6 V, 2 A or more supply (a phone charger worked) | Servo power only |
 | Cardboard box, ice-cream sticks, glue | The body |
 
