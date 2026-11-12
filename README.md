@@ -28,26 +28,26 @@ Nothing is trained. The connectome is never changed. The wiring of a real animal
 A **virtual fly** on screen receives exactly the same commands as the real robot, so you
 can compare what the brain decided with what the body did.
 
-![The live window: camera, what the fly sees, virtual fly, and brain bars](docs/media/robot_brain_window_escape.jpg)
+<p align="center"><img src="docs/media/robot_brain_window_escape.jpg" width="300" alt="The live brain window during an escape: escape is 7.5x rest and the command is B"></p>
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    CAM[Webcam] --> EYE[fly_eye.py<br/>16x64 ON/OFF motion]
-    CAM --> NOSE[nose.py<br/>food colour or YOLO]
-    MIC[Microphone] --> EAR[ear.py<br/>song + fast bands, L/R]
-    EYE --> BRAIN
-    NOSE --> BRAIN
-    EAR --> BRAIN
-    subgraph BRAIN[brain_link.py: MaleCNS v1.0 in flybrain, GPU]
-        IN[LC4 / LPLC2 / LPLC1<br/>ORN DM1 DM4 VA2 DM2<br/>JO-A / JO-B] --> NET[166,700 spiking neurons<br/>frozen wiring]
-        NET --> OUT[DNp01 escape<br/>DNa02 steer<br/>DNg100 forward<br/>MDN backward]
+    CAM["Webcam"] --> EYE["fly_eye.py<br/>16x64 ON/OFF motion"]
+    CAM --> NOSE["nose.py<br/>food colour or YOLO"]
+    MIC["Microphone"] --> EAR["ear.py<br/>song and fast bands, L/R"]
+    EYE --> IN
+    NOSE --> IN
+    EAR --> IN
+    subgraph BRAIN["brain_link.py - MaleCNS v1.0 in flybrain on the GPU"]
+        IN["LC4 / LPLC2 / LPLC1<br/>ORN DM1 DM4 VA2 DM2<br/>JO-A / JO-B"] --> NET["166,700 spiking neurons<br/>frozen wiring"]
+        NET --> OUT["DNp01 escape<br/>DNa02 steer<br/>DNg100 forward<br/>MDN backward"]
     end
-    OUT --> DEC[decide.py<br/>compare with live baseline]
-    DEC -->|F B L R S over USB| ESP[ESP32 + PCA9685<br/>gait firmware]
-    DEC --> TWIN[twin.py<br/>virtual fly]
-    ESP --> LEGS[4 leg servos<br/>head servo, OLED face]
+    OUT --> DEC["decide.py<br/>compare with live baseline"]
+    DEC -->|"F B L R S over USB"| ESP["ESP32 + PCA9685<br/>gait firmware"]
+    DEC --> TWIN["twin.py<br/>virtual fly"]
+    ESP --> LEGS["4 leg servos<br/>head servo, OLED face"]
 ```
 
 This is the same split real animals and other connectome-body projects use:
