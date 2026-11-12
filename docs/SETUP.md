@@ -277,6 +277,7 @@ uv pip install flybrain opencv-python      # this project's brain side, into the
 ```
 
 Linux: the same, with `.venv/bin/python` (fly-arena also ships `setup_linux.sh`).
+Without a desktop, add `--headless --gl egl` to fly-arena's own commands.
 
 **One environment for everything (saves about 3.7 GB).** Instead of a second
 environment, install fly-arena into this project's own environment. `pyproject.toml`
@@ -288,7 +289,6 @@ uv pip install -e ..\..\fly-arena
 cd ..\..\fly-arena
 ..\MaleCNS-Quadruped\fly-vision\.venv\Scripts\python.exe ..\MaleCNS-Quadruped\fly-vision\fly_body.py --video my_video.mp4 --seconds 15 --out fly.mp4
 ```
-Without a desktop, add `--headless --gl egl` to fly-arena's own commands.
 
 Run the brain in the body. Any video works as the fly's view; fast motion and
 looming shapes make it flee:
